@@ -1,5 +1,3 @@
-console.log(process.env)
-
 import { resolve } from 'path'
 import express from 'express'
 import cors from 'cors'
@@ -8,8 +6,7 @@ import { expressHandler as trpcPlayground } from 'trpc-playground/handlers/expre
 import { mainRouter } from './routes'
 import { prisma } from './prisma'
 import { authenticationMiddleware } from './middlewares'
-
-const IS_DEV = process.env.NODE_ENV === 'development'
+import { IS_DEV } from './config'
 
 const TRPC_ENDPOINT = '/api/trpc'
 const TRPC_PLAYGROUND_ENDPOINT = '/api/playground'
@@ -17,7 +14,6 @@ const TRPC_PLAYGROUND_ENDPOINT = '/api/playground'
 const STATIC_PATH = resolve(__dirname, '../client') // relative to the {root}/dist/server
 
 const PORT = parseInt(process.env.SOVOK_SERVER_PORT || '3000', 10)
-
 ;(async () => {
   const app = express()
 
@@ -25,7 +21,7 @@ const PORT = parseInt(process.env.SOVOK_SERVER_PORT || '3000', 10)
 
   app.use(authenticationMiddleware({ prisma }))
 
-  if (!IS_DEV) app.use(express.static(STATIC_PATH))
+  if (!IS_DEV) app.use(express.static(STATIC_PATH, {}))
 
   const playgroundMiddleware = await trpcPlayground({
     trpcApiEndpoint: TRPC_ENDPOINT,

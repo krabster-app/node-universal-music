@@ -1,14 +1,14 @@
 import * as esbuild from 'esbuild'
 
 await esbuild.build({
-  entryPoints: ['src/app.ts'],
+  entryPoints: ['src/worker.ts'],
   bundle: true,
-  outfile: '../dist/server/app.js',
+  outfile: '../dist/worker/worker.js',
   target: 'node16',
   platform: 'node',
   minify: true,
+  external: ['jsdom'],
   sourcemap: 'inline',
-  external: ['express', 'prisma', '@prisma/client', 'argon2', 'jsdom'],
   define: {
     'process.env.NODE_ENV': '"production"',
   },

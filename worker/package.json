@@ -1,0 +1,11 @@
+{
+  "name": "@sovok/worker",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "node build.mjs"
+  },
+  "dependencies": {
+    "ytdl-core": "^4.11.4"
+  }
+}
