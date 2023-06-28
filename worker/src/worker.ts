@@ -48,8 +48,8 @@ mpi.listen(async message => {
         type: OutputMessageKind.DownloadSuccess,
         id: message.task.id,
         download: {
-          id: uploaded.location,
-          serverId: '',
+          id: uploaded.key,
+          serverId: uploaded.location,
         },
       })
     }
