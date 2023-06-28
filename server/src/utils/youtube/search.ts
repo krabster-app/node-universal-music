@@ -1,6 +1,6 @@
 import jsdom from 'jsdom'
 import axios from 'axios'
-import { createFakeHeaders } from '../fake-headers'
+import { createFakeHeaders } from '@sovok/shared/utils/fake-headers'
 
 const HEADERS = createFakeHeaders({
   origin: 'https://youtube.com',

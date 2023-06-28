@@ -8,7 +8,7 @@ import {
   OutputMessage,
   OutputMessageKind,
 } from '@sovok/shared/models/download/worker-messages'
-import { searchVideos } from '@sovok/shared/utils/youtube/search'
+import { searchVideos } from '@sovok/server/utils/youtube/search'
 import { MediaSource } from '@sovok/shared/models/media-source'
 
 export const play = publicProcedure
@@ -32,6 +32,12 @@ export const play = publicProcedure
           info: {
             videoId: video?.videoId,
           },
+          meta: {
+            title: track.title,
+            artist: track.artistFull,
+            platform: 'Youtube',
+          },
+          mbid: mbid,
         },
       },
     })
