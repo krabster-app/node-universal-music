@@ -22,13 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-# Env files
-.env*
-!.env*.example
-
-# Local data
-postgres-data
-*.webm
-
-./uniapp

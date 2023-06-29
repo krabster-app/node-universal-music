@@ -3,7 +3,7 @@ FROM node:18-alpine3.17 as build
 WORKDIR /app
 
 COPY package*.json ./
-COPY client/package*.json ./client/
+COPY client-old/package*.json ./client/
 COPY shared/package*.json ./shared/
 COPY server/package*.json ./server/
 ENV NODE_ENV=development

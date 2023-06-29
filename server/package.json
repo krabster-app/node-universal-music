@@ -18,10 +18,10 @@
     "jiti": "^1.18.2",
     "nodemon": "^2.0.22",
     "prettier-plugin-prisma": "^4.12.0",
-    "prisma": "^4.13.0"
+    "prisma": "^4.16.1"
   },
   "dependencies": {
-    "@prisma/client": "^4.13.0",
+    "@prisma/client": "^4.16.1",
     "@trpc/server": "^10.23.0",
     "argon2": "^0.30.3",
     "aws-sdk": "^2.1406.0",

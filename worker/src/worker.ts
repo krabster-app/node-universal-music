@@ -10,6 +10,7 @@ import { parentPort } from 'worker_threads'
 import { uploadTrack } from '@sovok/server/utils/s3/s3'
 import { TMP_PATH } from '@sovok/server/config'
 import { ytdlDownload } from '@sovok/worker/ytdl'
+import { cleanup } from '@sovok/worker/utils/cleanup'
 
 console.log('[WORKER] Worker started')
 
@@ -52,6 +53,10 @@ mpi.listen(async message => {
           serverId: uploaded.location,
         },
       })
+
+      // Cleanup
+
+      await cleanup(fileTmpPath)
     }
   }
 })

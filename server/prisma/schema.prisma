@@ -22,24 +22,33 @@ model TrackInfo {
   title           String
   length          Int
   disambiguation  String?
-  artists         ArtistInfo[]
+  artistsMap      TrackToArtist[]
   artistFull      String
   coverUrl        String // http://coverartarchive.org/release/{MBID}/front-250/500/1200
   releaseId       String
   release         ReleaseInfo?      @relation(fields: [releaseId], references: [id])
   tags            String[]
-  TrackOnPlatform TrackOnPlatform[]
+  trackOnPlatform TrackOnPlatform[]
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
 }
 
 model ArtistInfo {
-  id          String     @id @default(uuid())
-  name        String
-  TrackInfo   TrackInfo? @relation(fields: [trackInfoId], references: [id])
-  trackInfoId String?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id        String          @id @default(uuid())
+  name      String
+  tracksMap TrackToArtist[]
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+}
+
+model TrackToArtist {
+  id        String     @id @default(uuid())
+  trackId   String
+  track     TrackInfo  @relation(fields: [trackId], references: [id])
+  artistId  String
+  artist    ArtistInfo @relation(fields: [artistId], references: [id])
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 }
 
 model ReleaseInfo {
@@ -47,7 +56,7 @@ model ReleaseInfo {
   title          String
   status         String // 'Official'
   disambiguation String? // 'clean'
-  TrackInfo      TrackInfo[]
+  tracks         TrackInfo[]
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 }

@@ -31,7 +31,7 @@ export const uploadTrack = async (
       Bucket: AWS_BUCKET,
       Key: s3Key,
       Body: file,
-      Metadata: meta,
+      Metadata: { platform: meta.platform },
     })
     .promise()
 

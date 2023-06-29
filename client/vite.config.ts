@@ -1,17 +1,17 @@
 import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
+import react from '@vitejs/plugin-react-swc'
 import tsconfigPaths from 'vite-tsconfig-paths'
 import { resolve } from 'path'
 
+// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
-    vue(),
+    react(),
     tsconfigPaths({
       root: resolve(__dirname, './'),
       projects: [resolve(__dirname, './tsconfig.json')],
       loose: true,
     }),
-
     {
       name: 'vite-current-line',
       transform(code, id) {
@@ -32,7 +32,6 @@ export default defineConfig({
       },
     },
   ],
-
   envDir: resolve(__dirname, '..'),
   envPrefix: 'SOVOK_',
 
