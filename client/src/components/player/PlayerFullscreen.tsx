@@ -1,5 +1,5 @@
 import { SeekBar } from '@sovok/client/components/player/components/SeekBar.tsx'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useEvent, useInterval } from 'react-use'
 import { playerInstance } from '@sovok/client/components/player/global/playerInstance.tsx'
 import { PlayerControls } from '@sovok/client/components/player/components/PlayerControls.tsx'
@@ -7,6 +7,8 @@ import { PlayerControls } from '@sovok/client/components/player/components/Playe
 // document.body.appendChild(playerInstance)
 // playerInstance.src = '/ignored/audio.webm'
 console.log(playerInstance)
+
+document.addEventListener('keypress', ({ key }) => console.log('pressed', key))
 
 const STEP_S = 0.2
 
@@ -33,6 +35,7 @@ export const PlayerFullscreen = () => {
     // playerInstance.src =
     //   'http://m3s.talkiiing.ru/d457c735-62f4-4cd4-a91b-88de7f684df2'
     playerInstance.src = 'http://localhost:9000/audio.webm'
+    onNewSource()
   }, [])
 
   useEvent(
@@ -44,6 +47,7 @@ export const PlayerFullscreen = () => {
     },
     playerInstance,
   )
+
   useEvent(
     'ended',
     () => {
@@ -54,10 +58,27 @@ export const PlayerFullscreen = () => {
     },
     playerInstance,
   )
+
   useEvent(
     'canplaythrough',
     () => {
       console.log('fully loaded')
+    },
+    playerInstance,
+  )
+
+  useEvent(
+    'play',
+    () => {
+      setPlaying(true)
+    },
+    playerInstance,
+  )
+
+  useEvent(
+    'pause',
+    () => {
+      setPlaying(false)
     },
     playerInstance,
   )
@@ -70,6 +91,46 @@ export const PlayerFullscreen = () => {
       setSlideValue(playerInstance.currentTime)
     }
   }, [isPlaying])
+
+  const onNewSource = useCallback(() => {
+    if ('mediaSession' in navigator) {
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: 'HDMI',
+        artist: 'BONES',
+        album: 'Racoon',
+        artwork: [
+          {
+            src: 'https://via.placeholder.com/96',
+            sizes: '96x96',
+            type: 'image/png',
+          },
+          {
+            src: 'https://via.placeholder.com/128',
+            sizes: '128x128',
+            type: 'image/png',
+          },
+          {
+            src: 'https://via.placeholder.com/192',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+        ],
+      })
+
+      navigator.mediaSession.setActionHandler('nexttrack', () =>
+        console.log('next track wanted'),
+      )
+
+      navigator.mediaSession.setActionHandler('previoustrack', () =>
+        console.log('prev track wanted'),
+      )
+
+      navigator.mediaSession.setActionHandler('seekto', e =>
+        console.log('seek', e.seekTime),
+      )
+      // TODO: Update playback state.
+    }
+  }, [])
 
   return (
     <div className='w-[21.6rem] h-[38.4rem] bg-black p-4'>
