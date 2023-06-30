@@ -1,0 +1,20 @@
+@keyframes scroll-right {
+  0% {
+    transform: translateX(0);
+  }
+  80%,
+  100% {
+    transform: translateX(calc(-50% - var(--ui-overflowing-text-margin) / 2));
+  }
+}
+
+.overflowingText {
+  --ui-overflowing-text-margin: 1rem;
+
+  animation: scroll-right var(--ui-overflowing-text-duration) linear 3s infinite;
+}
+
+.overflowingText::after {
+  margin-left: var(--ui-overflowing-text-margin);
+  content: attr(data-overflowing-text);
+}
