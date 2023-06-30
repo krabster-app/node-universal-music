@@ -1,13 +1,13 @@
 import { SeekBar } from '@sovok/client/components/player/components/SeekBar.tsx'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useEvent, useInterval } from 'react-use'
 import { playerInstance } from '@sovok/client/components/player/global/playerInstance.tsx'
 import { PlayerControls } from '@sovok/client/components/player/components/PlayerControls.tsx'
 import { PlayerTrackInfo } from '@sovok/client/components/player/components/PlayerTrackInfo.tsx'
 import { PlayerCover } from '@sovok/client/components/player/components/PlayerCover.tsx'
 
-import coverUrl from '@sovok/client/assets/sampleCover.png'
 import { getImageAvg } from '@sovok/client/utils/getImageAvg.ts'
+import { useCurrentTrack } from '@sovok/client/stores/currentTrack.store.tsx'
 
 document.addEventListener('keypress', ({ key }) => console.log('pressed', key))
 
@@ -18,8 +18,12 @@ const SHADOWING_K = 0.3
 export const PlayerFullscreen = () => {
   const [slideValue, setSlideValue] = useState(40)
   const [isPlaying, setPlaying] = useState(!playerInstance.paused)
-
   const [trackLength, setTrackLength] = useState(137)
+  const { title, artist, coverUrl } = useCurrentTrack(state => ({
+    title: state.current.title || 'Waiting...',
+    artist: state.current.artistFull || 'Waiting...',
+    coverUrl: state.current.coverUrl || 'https://via.placeholder.com/192',
+  }))
 
   useInterval(
     () => {
@@ -98,22 +102,11 @@ export const PlayerFullscreen = () => {
   const onNewSource = useCallback(() => {
     if ('mediaSession' in navigator) {
       navigator.mediaSession.metadata = new MediaMetadata({
-        title: 'HDMI',
-        artist: 'BONES',
-        album: 'Racoon',
+        title: title,
+        artist: artist,
         artwork: [
           {
-            src: 'https://via.placeholder.com/96',
-            sizes: '96x96',
-            type: 'image/png',
-          },
-          {
-            src: 'https://via.placeholder.com/128',
-            sizes: '128x128',
-            type: 'image/png',
-          },
-          {
-            src: 'https://via.placeholder.com/192',
+            src: coverUrl,
             sizes: '192x192',
             type: 'image/png',
           },
@@ -149,7 +142,7 @@ export const PlayerFullscreen = () => {
 
   return (
     <div
-      className='w-[21.6rem] h-[38.4rem] p-4 relative'
+      className='w-[21.6rem] h-[38.4rem] px-2 py-4 relative'
       style={{ backgroundColor: coverAvgColor }}
     >
       <img
@@ -158,16 +151,15 @@ export const PlayerFullscreen = () => {
       />
       <div className='relative flex flex-col h-full pb-8 w-full space-y-4 items-center justify-between'>
         <div className='text-center'>
-          <span className='text-white font-light text-sm'>Playing "BONES"</span>
+          <span className='text-zinc-300 font-regular text-xs'>
+            Playing "{artist}"
+          </span>
         </div>
         <div className='flex flex-col w-full px-4 space-y-4 items-center'>
           <PlayerCover url={coverUrl} className='drop-shadow-lg' />
         </div>
         <div className='flex flex-col w-full px-4 space-y-2 items-center'>
-          <PlayerTrackInfo
-            title='SeanPaulWasNeverThereToGimmeTheLight'
-            artist={'BONES'}
-          />
+          <PlayerTrackInfo title={title} artist={artist} />
           <SeekBar
             value={slideValue}
             maxValue={trackLength}

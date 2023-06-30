@@ -41,5 +41,6 @@ export default {
       modifiers: [],
     }),
     fadeEffectPlugin,
+    require('daisyui'),
   ],
 }

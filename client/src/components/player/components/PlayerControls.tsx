@@ -22,7 +22,10 @@ const ControlButton: FC<{
 }> = ({ onClick, className, icon: Icon }) => {
   return (
     <div
-      className={clsx('p-2 select-none cursor-pointer', className)}
+      className={clsx(
+        'p-2 select-none cursor-pointer transition-transform active:scale-90',
+        className,
+      )}
       onClick={onClick}
     >
       <Icon className='h-6 w-6 text-white' />
@@ -46,7 +49,7 @@ export const PlayerControls: FC<
       />
       <div
         onClick={() => setPlaying(v => !v)}
-        className='bg-white text-gray-800 p-3 rounded-full text-center select-none cursor-pointer'
+        className='bg-white text-gray-800 p-3 rounded-full text-center select-none cursor-pointer transition-transform active:scale-95'
       >
         {isPlaying ? (
           <PauseIcon className={PLAY_BTN_CLASSNAMES} />

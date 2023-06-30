@@ -90,7 +90,7 @@ export const SeekBar: FC<
         onClick={seekEnd}
       >
         <div className='relative h-[0.25rem]'>
-          <div className='absolute top-0 left-0 h-[0.25rem] w-full bg-zinc-700 rounded-sm'></div>
+          <div className='absolute top-0 left-0 h-[0.25rem] w-full bg-zinc-800 rounded-sm'></div>
           {maxValueSet ? (
             <>
               <div
@@ -105,7 +105,7 @@ export const SeekBar: FC<
                       : 0
                   }%`,
                 }}
-              ></div>
+              />
               <div
                 className='absolute top-0 left-0 h-[0.25rem] bg-zinc-100 rounded-sm'
                 ref={progressRef}

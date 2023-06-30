@@ -1,9 +1,10 @@
-import { PlayerFullscreen } from '@sovok/client/components/player/PlayerFullscreen.tsx'
+import { RouterProvider } from 'react-router-dom'
+import { router } from '@sovok/client/router'
 
-function App() {
+const App = () => {
   return (
-    <div className='p-6'>
-      <PlayerFullscreen />
+    <div className='p-4'>
+      <RouterProvider router={router} />
     </div>
   )
 }

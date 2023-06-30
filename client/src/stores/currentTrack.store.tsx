@@ -1,5 +1,6 @@
 import { create } from 'zustand'
 import { TrackInfo } from '@sovok/shared/models/search/track.ts'
+import coverUrl from '@sovok/client/assets/sampleCover2.png'
 
 type Store = {
   current: Partial<TrackInfo>
@@ -7,7 +8,11 @@ type Store = {
 }
 
 export const useCurrentTrack = create<Store>()(set => ({
-  current: {},
+  current: {
+    title: 'SeanPaulWasNeverThereToGimmeTheLight',
+    artistFull: 'BONES feat. UrMom',
+    coverUrl,
+  },
   set: (payload: Partial<TrackInfo>) =>
     set(state => ({ current: { ...state.current, ...payload } })),
 }))
