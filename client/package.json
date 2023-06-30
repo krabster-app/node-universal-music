@@ -14,10 +14,12 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@trpc/client": "^10.33.0",
+    "@trpc/react-query": "^10.33.0",
     "clsx": "^1.2.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-use": "^17.4.0"
+    "react-use": "^17.4.0",
+    "zustand": "^4.3.8"
   },
   "devDependencies": {
     "@storybook/addon-essentials": "^7.0.24",

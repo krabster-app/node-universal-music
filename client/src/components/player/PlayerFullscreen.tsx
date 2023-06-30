@@ -1,16 +1,19 @@
 import { SeekBar } from '@sovok/client/components/player/components/SeekBar.tsx'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useEvent, useInterval } from 'react-use'
 import { playerInstance } from '@sovok/client/components/player/global/playerInstance.tsx'
 import { PlayerControls } from '@sovok/client/components/player/components/PlayerControls.tsx'
+import { PlayerTrackInfo } from '@sovok/client/components/player/components/PlayerTrackInfo.tsx'
+import { PlayerCover } from '@sovok/client/components/player/components/PlayerCover.tsx'
 
-// document.body.appendChild(playerInstance)
-// playerInstance.src = '/ignored/audio.webm'
-console.log(playerInstance)
+import coverUrl from '@sovok/client/assets/sampleCover.png'
+import { getImageAvg } from '@sovok/client/utils/getImageAvg.ts'
 
 document.addEventListener('keypress', ({ key }) => console.log('pressed', key))
 
 const STEP_S = 0.2
+
+const SHADOWING_K = 0.3
 
 export const PlayerFullscreen = () => {
   const [slideValue, setSlideValue] = useState(40)
@@ -128,23 +131,60 @@ export const PlayerFullscreen = () => {
       navigator.mediaSession.setActionHandler('seekto', e =>
         console.log('seek', e.seekTime),
       )
-      // TODO: Update playback state.
     }
   }, [])
 
+  const [coverAvgColor, setCoverAvgColor] = useState('#000000')
+
+  useEffect(() => {
+    getImageAvg(coverUrl).then(r => {
+      console.log(r)
+      setCoverAvgColor(
+        `#${Math.floor(r.r * SHADOWING_K).toString(16)}${Math.floor(
+          r.g * SHADOWING_K,
+        ).toString(16)}${Math.floor(r.b * SHADOWING_K).toString(16)}`,
+      )
+    })
+  }, []) // image
+
   return (
-    <div className='w-[21.6rem] h-[38.4rem] bg-black p-4'>
-      <div className='flex flex-col w-full space-y-4 items-center'>
-        <SeekBar
-          value={slideValue}
-          maxValue={trackLength}
-          onSeekEnd={v => {
-            console.log('end', v, 'current', playerInstance.currentTime)
-            playerInstance.currentTime = v
-          }}
-          playing={isPlaying}
-        />
-        <PlayerControls isPlaying={isPlaying} setPlaying={setPlaying} />
+    <div
+      className='w-[21.6rem] h-[38.4rem] p-4 relative'
+      style={{ backgroundColor: coverAvgColor }}
+    >
+      <img
+        src={coverUrl}
+        className='absolute object-cover top-0 left-0 w-full h-full blur-md contrast-50 brightness-50 opacity-50'
+      />
+      <div className='relative flex flex-col h-full pb-8 w-full space-y-4 items-center justify-between'>
+        <div className='text-center'>
+          <span className='text-white font-light text-sm'>Playing "BONES"</span>
+        </div>
+        <div className='flex flex-col w-full px-4 space-y-4 items-center'>
+          <PlayerCover url={coverUrl} className='drop-shadow-lg' />
+        </div>
+        <div className='flex flex-col w-full px-4 space-y-2 items-center'>
+          <PlayerTrackInfo
+            title='SeanPaulWasNeverThereToGimmeTheLight'
+            artist={'BONES'}
+          />
+          <SeekBar
+            value={slideValue}
+            maxValue={trackLength}
+            onSeekEnd={v => {
+              console.log('end', v, 'current', playerInstance.currentTime)
+              playerInstance.currentTime = v
+            }}
+            playing={isPlaying}
+          />
+          <PlayerControls
+            isPlaying={isPlaying}
+            setPlaying={setPlaying}
+            onCommand={command => {
+              console.log('command', command)
+            }}
+          />
+        </div>
       </div>
     </div>
   )

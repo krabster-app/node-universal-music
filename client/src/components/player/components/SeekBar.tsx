@@ -83,10 +83,6 @@ export const SeekBar: FC<
 
   return (
     <div className='w-full flex flex-col text-white'>
-      <div className='w-full flex justify-between text-xs'>
-        <span>{maxValueSet ? secondsFormat(value) : '-:--'}</span>
-        <span>{maxValueSet ? durationString : '-:--'}</span>
-      </div>
       <div
         className='relative py-2'
         datatype='seekbar'
@@ -94,11 +90,11 @@ export const SeekBar: FC<
         onClick={seekEnd}
       >
         <div className='relative h-[0.25rem]'>
-          <div className='absolute top-0 left-0 h-[0.25rem] w-full bg-gray-700 rounded-sm'></div>
+          <div className='absolute top-0 left-0 h-[0.25rem] w-full bg-zinc-700 rounded-sm'></div>
           {maxValueSet ? (
             <>
               <div
-                className='absolute top-0 left-0 h-[0.25rem] bg-gray-500 rounded-sm'
+                className='absolute top-0 left-0 h-[0.25rem] bg-zinc-500 rounded-sm'
                 style={{
                   width: `${
                     playerInstance.buffered.length > 0
@@ -111,7 +107,7 @@ export const SeekBar: FC<
                 }}
               ></div>
               <div
-                className='absolute top-0 left-0 h-[0.25rem] bg-white rounded-sm'
+                className='absolute top-0 left-0 h-[0.25rem] bg-zinc-100 rounded-sm'
                 ref={progressRef}
                 style={{
                   width: `${width}%`,
@@ -124,6 +120,10 @@ export const SeekBar: FC<
             </>
           ) : null}
         </div>
+      </div>
+      <div className='w-full flex justify-between text-xs'>
+        <span>{maxValueSet ? secondsFormat(value) : '-:--'}</span>
+        <span>{maxValueSet ? durationString : '-:--'}</span>
       </div>
     </div>
   )

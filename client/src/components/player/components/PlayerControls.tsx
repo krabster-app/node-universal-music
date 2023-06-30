@@ -1,5 +1,4 @@
 import {
-  Component,
   Dispatch,
   FC,
   MouseEventHandler,
@@ -22,21 +21,29 @@ const ControlButton: FC<{
   icon: (props: { className?: string }) => JSX.Element | null
 }> = ({ onClick, className, icon: Icon }) => {
   return (
-    <div className={clsx('p-2 wire', className)} onClick={onClick}>
+    <div
+      className={clsx('p-2 select-none cursor-pointer', className)}
+      onClick={onClick}
+    >
       <Icon className='h-6 w-6 text-white' />
     </div>
   )
 }
+export type PlayerCommand = 'nexttrack' | 'previoustrack'
 
 export const PlayerControls: FC<
   PropsWithChildren<{
     isPlaying: boolean
     setPlaying: Dispatch<SetStateAction<boolean>>
+    onCommand: (action: PlayerCommand) => void
   }>
-> = ({ isPlaying, setPlaying }) => {
+> = ({ isPlaying, setPlaying, onCommand }) => {
   return (
     <div className='w-full flex justify-center items-center space-x-2'>
-      <ControlButton icon={BackwardIcon} />
+      <ControlButton
+        icon={BackwardIcon}
+        onClick={() => onCommand('previoustrack')}
+      />
       <div
         onClick={() => setPlaying(v => !v)}
         className='bg-white text-gray-800 p-3 rounded-full text-center select-none cursor-pointer'
@@ -49,7 +56,10 @@ export const PlayerControls: FC<
           />
         )}
       </div>
-      <ControlButton icon={ForwardIcon} />
+      <ControlButton
+        icon={ForwardIcon}
+        onClick={() => onCommand('nexttrack')}
+      />
     </div>
   )
 }

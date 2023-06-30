@@ -29,7 +29,12 @@ const fadeEffectPlugin = plugin(({ matchUtilities, theme }) => {
 export default {
   content: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        sans: ['Ubuntu', 'sans-serif'],
+        display: ['Jost', 'Montserrat', 'sans-serif'],
+      },
+    },
   },
   plugins: [
     typography({

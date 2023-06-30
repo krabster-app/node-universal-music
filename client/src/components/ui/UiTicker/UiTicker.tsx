@@ -2,6 +2,7 @@ import clsx from 'clsx'
 import {
   CSSProperties,
   FC,
+  HTMLAttributes,
   RefObject,
   useCallback,
   useEffect,
@@ -10,7 +11,7 @@ import {
   useState,
 } from 'react'
 import style from './UiTicker.module.css'
-import { exists } from '@sovok/shared'
+import { exists } from '@sovok/shared/guards'
 
 const ANIMATION_DURATION = 30
 
@@ -33,9 +34,9 @@ const useResizeObserver = (
 
 export type UiTickerProps = {
   text: string
-}
+} & HTMLAttributes<HTMLDivElement>
 
-export const UiTicker: FC<UiTickerProps> = ({ text }) => {
+export const UiTicker: FC<UiTickerProps> = ({ text, className }) => {
   const rootRef = useRef<HTMLDivElement>(null)
   const innerRef = useRef<HTMLSpanElement>(null)
 
@@ -65,7 +66,11 @@ export const UiTicker: FC<UiTickerProps> = ({ text }) => {
   return (
     <div
       ref={rootRef}
-      className={clsx('overflow-hidden', isOverflowing && 'fade-right-16')}
+      className={clsx(
+        'overflow-hidden select-none cursor-auto',
+        isOverflowing && 'fade-right-16',
+        className,
+      )}
     >
       <span
         ref={innerRef}
