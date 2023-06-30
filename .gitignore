@@ -32,3 +32,4 @@ postgres-data
 *.webm
 
 ./uniapp
+./shared/test
