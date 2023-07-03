@@ -10,8 +10,8 @@ class TrackCacheStore {
   get(key: string) {
     return this.idb.get(this.tableName, key)
   }
-  set(key: string, val: CachedTrackInfo) {
-    return this.idb.put(this.tableName, val, key)
+  set(val: CachedTrackInfo) {
+    return this.idb.put(this.tableName, val)
   }
   has(key: string): boolean {
     return Boolean(this.get(key))

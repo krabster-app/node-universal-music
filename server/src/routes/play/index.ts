@@ -82,7 +82,7 @@ export const play = publicProcedure
           filter: message =>
             message.type === OutputMessageKind.DownloadSuccess &&
             message.id === mbid,
-          timeoutMs: 30_000,
+          timeoutMs: 120_000,
         })
         .catch(e => {
           return { error: 'DOWNLOADING_ISSUE', details: e }

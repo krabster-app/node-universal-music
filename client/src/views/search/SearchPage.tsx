@@ -2,11 +2,12 @@ import useInput from '@sovok/client/utils/hooks/useInput.ts'
 import { useDebounce } from '@sovok/client/utils/hooks/useDebounce.ts'
 import { trpc } from '@sovok/client/trpc.ts'
 import { exists } from '@sovok/shared'
-import { FC, useMemo } from 'react'
+import { FC, useCallback, useMemo } from 'react'
 import { UiLoader } from '@sovok/client/components/ui/UiLoader.tsx'
 import { SearchResult } from '@client/components/search/SearchResult.tsx'
 import { usePlayer } from '@client/components/player/global/usePlayer.ts'
 import { TrackInfo } from '@sovok/shared/models/search/track.ts'
+import useSWR from 'swr'
 
 const NoResults: FC<{ searchValue: string }> = ({ searchValue }) => (
   <p className='text-center w-full'>
@@ -26,12 +27,18 @@ export const SearchPage = () => {
   const searchValue = useDebounce(searchValueRaw, 700)
   const player = usePlayer()
 
-  const { data, isLoading } = trpc.search.useSWR(
+  const fetcher = useCallback(
+    () =>
+      trpc.search.query({
+        query: searchValue,
+      }),
+    [searchValue],
+  )
+
+  const { data, isLoading } = useSWR(
+    searchValue.length > 3 ? searchValue : null,
+    fetcher,
     {
-      query: searchValue,
-    },
-    {
-      isDisabled: searchValue.length <= 3,
       fallbackData: [] as TrackInfo[],
       revalidateOnFocus: false,
     },

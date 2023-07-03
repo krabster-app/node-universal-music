@@ -1,5 +1,4 @@
 import type { MainRouter } from '@sovok/server'
-import { createSWRProxyHooks } from '@trpc-swr/client'
 import { createTRPCProxyClient, httpBatchLink } from '@trpc/client'
 import { AUTH_TOKEN_KEY } from '@client/domain/auth.ts'
 
@@ -20,9 +19,5 @@ const payload = {
     }),
   ],
 }
-//
-// export const trpc = createSWRProxyHooks<MainRouter>(payload)
-//
-// export const trpcClient = trpc.createClient()
 
-export let trpcNative = createTRPCProxyClient()
+export let trpc = createTRPCProxyClient<MainRouter>(payload)

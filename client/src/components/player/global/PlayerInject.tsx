@@ -1,16 +1,13 @@
-import { playerInstance } from '@client/components/player/global/playerInstance'
-import { FC, PropsWithChildren, useEffect } from 'react'
-import {
-  PlayerContext,
-  playerController,
-} from '@client/components/player/global/PlayerContext.ts'
+import { FC, PropsWithChildren, useState } from 'react'
+import { PlayerContext } from '@client/components/player/global/PlayerContext.ts'
+import { PlayerController } from '@client/components/player/global/playerInstance.ts'
 
-export const PlayerInject: FC<PropsWithChildren<{}>> = ({ children }) => {
-  useEffect(() => {
-    console.log(playerInstance.readyState)
-  }, [])
+export const PlayerInject: FC<
+  PropsWithChildren<{ openPlayer: () => Promise<void> }>
+> = ({ children, openPlayer }) => {
+  const [controller] = useState(new PlayerController(openPlayer))
   return (
-    <PlayerContext.Provider value={playerController}>
+    <PlayerContext.Provider value={controller}>
       {children}
     </PlayerContext.Provider>
   )

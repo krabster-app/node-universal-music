@@ -1,11 +1,14 @@
-import { trpc, trpcClient } from './trpc'
 import { FC } from 'react'
 import App from '@sovok/client/App.tsx'
+import { PlayerInject } from '@client/components/player/global/PlayerInject.tsx'
+import { router } from '@client/router'
+
+const openPlayer = () => router.navigate('/player')
 
 export const Wrapper: FC<{}> = () => {
   return (
-    <trpc.Provider client={trpcClient}>
+    <PlayerInject openPlayer={openPlayer}>
       <App />
-    </trpc.Provider>
+    </PlayerInject>
   )
 }

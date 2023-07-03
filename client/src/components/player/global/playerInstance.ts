@@ -4,16 +4,74 @@ import { COVER_PLACEHOLDER } from '@client/components/player/common.ts'
 import { trpc } from '@client/trpc.ts'
 import { TrackInfo } from '@sovok/shared/models/search/track.ts'
 import { CachedTrackInfo } from '@client/stores/idb.ts'
+import {
+  useCurrentTrack,
+  usePlayerState,
+} from '@client/stores/currentTrack.store.tsx'
 
 export const playerInstance = new Audio()
 
 playerInstance.preload = 'auto'
 
-export class PlayerController {
-  constructor() {}
+const {
+  set: setCurrentTrack,
+  current: { id: currentTrackIdFromStore },
+} = await useCurrentTrack.getState()
+const { patch } = usePlayerState.getState()
+const setPlaying = (value: boolean) =>
+  patch({
+    isPlaying: value,
+  })
+const setTrackLength = (value: number) =>
+  patch({
+    trackLength: value,
+  })
 
-  private play(url: string) {
+playerInstance.addEventListener('loadedmetadata', () => {
+  console.log('loaded meta')
+  setTrackLength(playerInstance.duration)
+})
+
+playerInstance.addEventListener('ended', () => {
+  console.log('ended')
+  setPlaying(false)
+  playerInstance.currentTime = 0
+})
+
+playerInstance.addEventListener('play', () => setPlaying(true))
+
+playerInstance.addEventListener('pause', () => setPlaying(false))
+
+export class PlayerController {
+  openPlayer: () => Promise<void>
+  constructor(_openPlayer: () => Promise<void>) {
+    this.openPlayer = _openPlayer
+  }
+
+  private async play(url: string) {
     playerInstance.src = url
+    await playerInstance.play()
+    await this.openPlayer()
+  }
+
+  async pause() {
+    playerInstance.pause()
+  }
+
+  async continue() {
+    if (playerInstance.src.length > 0) {
+      await playerInstance.play()
+    } else {
+      console.log('no source')
+      if (exists(currentTrackIdFromStore)) {
+        const track = await trackCacheStore.get(currentTrackIdFromStore)
+        if (!exists(track)) {
+          console.error($line, 'no track found while continue')
+          return
+        }
+        this.startPlaying(track)
+      }
+    }
   }
 
   private onNewSource({
@@ -52,7 +110,7 @@ export class PlayerController {
     }
   }
 
-  private startPlaying(cachedEntry: CachedTrackInfo) {
+  private async startPlaying(cachedEntry: CachedTrackInfo) {
     if (!exists(cachedEntry.link)) {
       console.error($line, 'CANNOT_PLAY_CACHED_TRACK (no link)', cachedEntry.id)
       return
@@ -62,7 +120,8 @@ export class PlayerController {
       artist: cachedEntry.artistFull,
       cover: (cachedEntry.coverUrl ?? COVER_PLACEHOLDER).replace('##', '250'),
     })
-    this.play(cachedEntry.link)
+    setCurrentTrack(cachedEntry)
+    await this.play(cachedEntry.link)
   }
 
   async requestPlay(mbid: string) {
@@ -74,17 +133,23 @@ export class PlayerController {
     if (exists(cachedEntry) && exists(cachedEntry.link)) {
       this.startPlaying(cachedEntry)
     } else {
-      const { trigger } = await trpc.play.useSWRMutation()
-      const data = await trigger({
+      const data = await trpc.play.mutate({
         mbid: mbid,
       })
       console.log(data)
       if (isNoError<{ track: TrackInfo; link: string }>(data)) {
         this.startPlaying(data as unknown as CachedTrackInfo)
-        await trackCacheStore.set(data.track.id, {
+        console.log('putting', data.track.id, {
           ...data.track,
           link: data.link,
         })
+        console.log(
+          await trackCacheStore.set({
+            ...data.track,
+            link: data.link,
+          }),
+        )
+        return
       }
       console.error('CANNOT GET DATA', $line)
       return

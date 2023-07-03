@@ -1,112 +1,81 @@
-import { SeekBar } from '@sovok/client/components/player/components/SeekBar.tsx'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useEvent, useInterval } from 'react-use'
+import { useNavigate } from 'react-router-dom'
 import { playerInstance } from '@sovok/client/components/player/global/playerInstance.ts'
+import { SeekBar } from '@sovok/client/components/player/components/SeekBar.tsx'
 import { PlayerControls } from '@sovok/client/components/player/components/PlayerControls.tsx'
 import { PlayerTrackInfo } from '@sovok/client/components/player/components/PlayerTrackInfo.tsx'
 import { PlayerCover } from '@sovok/client/components/player/components/PlayerCover.tsx'
-
+import {
+  useCurrentTrack,
+  usePlayerState,
+} from '@sovok/client/stores/currentTrack.store.tsx'
+import { padLeft } from '@client/utils/padLeft.ts'
 import { getImageAvg } from '@sovok/client/utils/getImageAvg.ts'
-import { useCurrentTrack } from '@sovok/client/stores/currentTrack.store.tsx'
+import { ArrowLeftIcon } from '@heroicons/react/24/solid'
 
 const STEP_S = 0.2
 const SHADOWING_K = 0.3
 
 export const PlayerFullscreen = () => {
-  const [slideValue, setSlideValue] = useState(40)
-  const [isPlaying, setPlaying] = useState(!playerInstance.paused)
-  const [trackLength, setTrackLength] = useState(137)
+  const [slideValue, setSlideValue] = useState(0)
+  const { trackLength, isPlaying } = usePlayerState(state => ({
+    trackLength: state.current.trackLength,
+    isPlaying: state.current.isPlaying,
+  }))
+
   const { title, artist, coverUrl } = useCurrentTrack(state => ({
-    title: state.current.title || 'Waiting...',
-    artist: state.current.artistFull || 'Waiting...',
+    title: state.current.title || '',
+    artist: state.current.artistFull || '',
     coverUrl: state.current.coverUrl || 'https://via.placeholder.com/192',
   }))
 
   useInterval(
     () => {
       setSlideValue(() => {
-        const current = playerInstance.currentTime
-        if (current >= trackLength) setPlaying(false)
-        return Math.floor(current)
+        return Math.floor(playerInstance.currentTime)
       })
     },
     isPlaying ? STEP_S * 1000 : null,
   )
 
-  console.log('player render')
-
-  useEffect(() => {
-    // playerInstance.src =
-    //   'http://m3s.talkiiing.ru/d457c735-62f4-4cd4-a91b-88de7f684df2'
-    playerInstance.src = 'http://localhost:9000/audio.webm'
-  }, [])
-
-  useEvent(
-    'loadedmetadata',
-    () => {
-      console.log('loaded meta')
-      setTrackLength(playerInstance.duration)
-      setSlideValue(0)
-    },
-    playerInstance,
-  )
-
-  useEvent(
-    'ended',
-    () => {
-      console.log('ended')
-      setPlaying(false)
-      playerInstance.currentTime = 0
-      setSlideValue(0)
-    },
-    playerInstance,
-  )
-
-  useEvent(
-    'canplaythrough',
-    () => {
-      console.log('fully loaded')
-    },
-    playerInstance,
-  )
-
-  useEvent(
-    'play',
-    () => {
-      setPlaying(true)
-    },
-    playerInstance,
-  )
-
   useEvent(
     'pause',
     () => {
-      setPlaying(false)
+      setSlideValue(playerInstance.currentTime)
     },
     playerInstance,
   )
-
-  useEffect(() => {
-    if (isPlaying) {
-      playerInstance.play()
-    } else {
-      playerInstance.pause()
-      setSlideValue(playerInstance.currentTime)
-    }
-  }, [isPlaying])
 
   const [coverAvgColor, setCoverAvgColor] = useState('#000000')
 
   useEffect(() => {
-    getImageAvg(coverUrl).then(r => {
-      console.log(r)
-      setCoverAvgColor(
-        `#${Math.floor(r.r * SHADOWING_K).toString(16)}${Math.floor(
-          r.g * SHADOWING_K,
-        ).toString(16)}${Math.floor(r.b * SHADOWING_K).toString(16)}`,
-      )
-    })
+    getImageAvg(coverUrl)
+      .then(r => {
+        console.log(r)
+        const futureColor = `#${padLeft(
+          Math.floor(r.r * SHADOWING_K).toString(16),
+          '0',
+          2,
+        )}${padLeft(
+          Math.floor(r.g * SHADOWING_K).toString(16),
+          '0',
+          2,
+        )}${padLeft(Math.floor(r.b * SHADOWING_K).toString(16), '0', 2)}`
+        console.log(futureColor)
+        setCoverAvgColor(futureColor)
+      })
+      .catch(() => {
+        setCoverAvgColor('#000')
+      })
   }, []) // image
+
+  const computedCoverUrl = useMemo(
+    () => coverUrl.replace('##', '250'),
+    [coverUrl],
+  )
+
+  const navigate = useNavigate()
 
   return (
     <div
@@ -114,11 +83,14 @@ export const PlayerFullscreen = () => {
       style={{ backgroundColor: coverAvgColor }}
     >
       <img
-        src={coverUrl}
+        src={computedCoverUrl}
         className='absolute object-cover top-0 left-0 w-full h-full blur-md contrast-50 brightness-50 opacity-50'
       />
       <div className='relative flex flex-col h-full pb-8 w-full space-y-4 items-center justify-between'>
-        <div className='text-center'>
+        <div className='w-full px-2 flex justify-between items-center cursor-pointer select-none'>
+          <div className='p-2' onClick={() => navigate('/search')}>
+            <ArrowLeftIcon className='w-6 h-6 text-white' />
+          </div>
           <span className='text-zinc-300 font-regular text-xs'>
             Playing "{artist}"
           </span>
@@ -132,14 +104,12 @@ export const PlayerFullscreen = () => {
             value={slideValue}
             maxValue={trackLength}
             onSeekEnd={v => {
-              console.log('end', v, 'current', playerInstance.currentTime)
               playerInstance.currentTime = v
             }}
             playing={isPlaying}
           />
           <PlayerControls
             isPlaying={isPlaying}
-            setPlaying={setPlaying}
             onCommand={command => {
               console.log('command', command)
             }}

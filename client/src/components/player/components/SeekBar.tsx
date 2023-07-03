@@ -31,10 +31,13 @@ export const SeekBar: FC<
   )
   const durationString = useMemo(() => secondsFormat(maxValue), [maxValue])
 
-  const reset = useCallback(() => {
-    setMsLeft(Math.floor((maxValue - value) * 1000))
-    setWidth((value * 100) / maxValue)
-  }, [maxValue, value])
+  const reset = useCallback(
+    (value: number) => {
+      setMsLeft(Math.floor((maxValue - value) * 1000))
+      setWidth((value * 100) / maxValue)
+    },
+    [maxValue],
+  )
 
   const seekEnd = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -51,17 +54,15 @@ export const SeekBar: FC<
   )
 
   useEffect(() => {
-    reset()
-  }, [])
+    reset(value)
+  }, [maxValueSet])
 
   useEffect(() => {
-    if (!playing) {
-      reset()
-    }
-  }, [playing, reset])
+    if (!playing) reset(value)
+  }, [playing, reset, value])
 
   useEffect(() => {
-    if (width < 100 && playing) {
+    if (width !== 100 && playing) {
       const timeout = setTimeout(() => {
         setWidth(100)
       }, 100)
@@ -75,7 +76,7 @@ export const SeekBar: FC<
     () => {
       console.log('visibility changed')
       if (document.visibilityState === 'visible') {
-        reset()
+        reset(value)
       }
     },
     document,

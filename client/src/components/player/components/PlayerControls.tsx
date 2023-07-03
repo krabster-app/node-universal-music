@@ -1,10 +1,4 @@
-import {
-  Dispatch,
-  FC,
-  MouseEventHandler,
-  PropsWithChildren,
-  SetStateAction,
-} from 'react'
+import { FC, MouseEventHandler, PropsWithChildren } from 'react'
 import {
   PlayIcon,
   PauseIcon,
@@ -12,6 +6,9 @@ import {
   ForwardIcon,
 } from '@heroicons/react/24/solid'
 import clsx from 'clsx'
+import { useCurrentTrack } from '@client/stores/currentTrack.store.tsx'
+import { usePlayer } from '@client/components/player/global/usePlayer.ts'
+import { exists } from '@sovok/shared'
 
 const PLAY_BTN_CLASSNAMES = 'w-6 h-6'
 
@@ -37,10 +34,12 @@ export type PlayerCommand = 'nexttrack' | 'previoustrack'
 export const PlayerControls: FC<
   PropsWithChildren<{
     isPlaying: boolean
-    setPlaying: Dispatch<SetStateAction<boolean>>
     onCommand: (action: PlayerCommand) => void
   }>
-> = ({ isPlaying, setPlaying, onCommand }) => {
+> = ({ isPlaying, onCommand }) => {
+  const player = usePlayer()
+  const id = useCurrentTrack(state => state.current.id)
+
   return (
     <div className='w-full flex justify-center items-center space-x-2'>
       <ControlButton
@@ -48,8 +47,13 @@ export const PlayerControls: FC<
         onClick={() => onCommand('previoustrack')}
       />
       <div
-        onClick={() => setPlaying(v => !v)}
-        className='bg-white text-gray-800 p-3 rounded-full text-center select-none cursor-pointer transition-transform active:scale-95'
+        onClick={() =>
+          isPlaying ? player.pause() : exists(id) ? player.continue() : false
+        }
+        className={clsx(
+          'bg-white text-gray-800 p-3 rounded-full text-center select-none cursor-pointer transition-transform active:scale-95',
+          !isPlaying && !exists(id) && 'disabled',
+        )}
       >
         {isPlaying ? (
           <PauseIcon className={PLAY_BTN_CLASSNAMES} />
