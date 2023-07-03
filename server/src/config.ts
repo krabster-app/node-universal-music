@@ -23,3 +23,23 @@ if (
 ) {
   throw new Error('AWS not configured')
 }
+
+export const MUSICBRAINZ_APPNAME = process.env.SOVOK_MUSICBRAINZ_APPNAME
+
+export const MUSICBRAINZ_APPVERSION = process.env.SOVOK_MUSICBRAINZ_APPVERSION
+
+export const MUSICBRAINZ_CONTACT = process.env.SOVOK_MUSICBRAINZ_CONTACT
+
+if (
+  !exists(MUSICBRAINZ_APPNAME) ||
+  !exists(MUSICBRAINZ_APPVERSION) ||
+  !exists(MUSICBRAINZ_CONTACT)
+) {
+  throw new Error('Musicbrainz not configured')
+}
+
+export const CDN_BASE_URL = process.env.SOVOK_CDN_BASE_URL
+
+if (!exists(CDN_BASE_URL) || CDN_BASE_URL.length === 0) {
+  throw new Error('CDN BASE URL not configured')
+}

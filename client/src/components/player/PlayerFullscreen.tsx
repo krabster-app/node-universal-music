@@ -1,7 +1,7 @@
 import { SeekBar } from '@sovok/client/components/player/components/SeekBar.tsx'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useEvent, useInterval } from 'react-use'
-import { playerInstance } from '@sovok/client/components/player/global/playerInstance.tsx'
+import { playerInstance } from '@sovok/client/components/player/global/playerInstance.ts'
 import { PlayerControls } from '@sovok/client/components/player/components/PlayerControls.tsx'
 import { PlayerTrackInfo } from '@sovok/client/components/player/components/PlayerTrackInfo.tsx'
 import { PlayerCover } from '@sovok/client/components/player/components/PlayerCover.tsx'
@@ -9,10 +9,7 @@ import { PlayerCover } from '@sovok/client/components/player/components/PlayerCo
 import { getImageAvg } from '@sovok/client/utils/getImageAvg.ts'
 import { useCurrentTrack } from '@sovok/client/stores/currentTrack.store.tsx'
 
-document.addEventListener('keypress', ({ key }) => console.log('pressed', key))
-
 const STEP_S = 0.2
-
 const SHADOWING_K = 0.3
 
 export const PlayerFullscreen = () => {
@@ -42,7 +39,6 @@ export const PlayerFullscreen = () => {
     // playerInstance.src =
     //   'http://m3s.talkiiing.ru/d457c735-62f4-4cd4-a91b-88de7f684df2'
     playerInstance.src = 'http://localhost:9000/audio.webm'
-    onNewSource()
   }, [])
 
   useEvent(
@@ -98,34 +94,6 @@ export const PlayerFullscreen = () => {
       setSlideValue(playerInstance.currentTime)
     }
   }, [isPlaying])
-
-  const onNewSource = useCallback(() => {
-    if ('mediaSession' in navigator) {
-      navigator.mediaSession.metadata = new MediaMetadata({
-        title: title,
-        artist: artist,
-        artwork: [
-          {
-            src: coverUrl,
-            sizes: '192x192',
-            type: 'image/png',
-          },
-        ],
-      })
-
-      navigator.mediaSession.setActionHandler('nexttrack', () =>
-        console.log('next track wanted'),
-      )
-
-      navigator.mediaSession.setActionHandler('previoustrack', () =>
-        console.log('prev track wanted'),
-      )
-
-      navigator.mediaSession.setActionHandler('seekto', e =>
-        console.log('seek', e.seekTime),
-      )
-    }
-  }, [])
 
   const [coverAvgColor, setCoverAvgColor] = useState('#000000')
 

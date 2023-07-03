@@ -5,7 +5,7 @@ import { MBID } from '@sovok/shared/models/search/track'
 export type S3Metadata = {
   title: string
   artist: string
-  platform: string
+  platform: MediaSource | string
 }
 
 export type DownloadTaskInfo = {

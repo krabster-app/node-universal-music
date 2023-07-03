@@ -11,19 +11,20 @@ import { uploadTrack } from '@sovok/server/utils/s3/s3'
 import { TMP_PATH } from '@sovok/server/config'
 import { ytdlDownload } from '@sovok/worker/ytdl'
 import { cleanup } from '@sovok/worker/utils/cleanup'
+import { TrackSource } from '@sovok/shared/models/media-source'
 
 console.log('[WORKER] Worker started')
-
-// console.log('self:', self)
-// console.log('globalThis:', globalThis)
-// console.log('global:', global)
-// console.log('this:', this)
 
 declare const globalThis: DedicatedWorkerGlobalScope
 
 const mpi = new MessagePassingInterface<OutputMessage, InputMessage>(
   parentPort!,
 )
+
+const getPlatformPostfix = (platform: TrackSource | string) => {
+  if (platform === TrackSource.YouTube) return 'y'
+  return platform
+}
 
 mpi.listen(async message => {
   console.log('[WORKER] Received message', message)
@@ -35,7 +36,9 @@ mpi.listen(async message => {
         TMP_PATH ?? './tmp',
         message.task.task.info.videoId,
       )
-      const s3Key = `${message.task.task.mbid}`
+      const s3Key = `${message.task.task.mbid}_${getPlatformPostfix(
+        message.task.task.meta.platform,
+      )}`
 
       await ytdlDownload(message.task.task.info.videoId, fileTmpPath)
 

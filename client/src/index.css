@@ -5,3 +5,42 @@
 .wire {
     @apply border border-red-500;
 }
+
+html,
+body,
+#root {
+    @apply h-full w-full;
+}
+
+@keyframes fade-in {
+    from {
+        @apply opacity-0;
+    }
+    to {
+        @apply opacity-100;
+    }
+}
+
+@keyframes slide-from-bottom {
+    from {
+        @apply translate-y-4;
+    }
+    to {
+        @apply translate-y-0;
+    }
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus,
+input:-internal-autofill-selected {
+    -webkit-text-fill-color: initial !important;
+    background-color: inherit !important;
+    -webkit-box-shadow: none !important;
+}

@@ -6,44 +6,48 @@ export type ISODayDate = string
 
 export const WORLDWIDE_COUNTRY = 'XW'
 
-export type MusicBrainzAnswer = {
+export type MBEntityType = 'recording' | 'release' | 'artist'
+
+export type MBReturnType<T extends MBEntityType> = T extends 'recording'
+  ? MBRecording
+  : never
+
+export type MusicBrainzRecordingSearchAnswer = {
   created: ISODate // ISODate
   count: number
   offset: number
-  recordings: MusicBrainzRecording[]
+  recordings: MBRecording[]
 }
 
-export type MusicBrainzRecording = {
+export type MBRecording = {
   id: MBID // inner id
-  score: number // int score
   title: string // track title
   length: number // length in ms
   disambiguation: string // "clean"
   video?: unknown // any
-  'artist-credit': MusicBrainzArtist[]
+  'artist-credit': MBArtist[]
   'first-release-date': ISODayDate // yyyy-mm-dd
-  releases?: MusicBrainzRelease[]
-  isrcs: string[]
-  tags?: MusicBrainzRecordingTag[]
+  releases?: MBRelease[]
+  tags?: MBRecordingTag[]
 }
 
-export type MusicBrainzRecordingTag = {
+export type MBRecordingTag = {
   count: number
   name: string
 }
 
-export type MusicBrainzArtist = {
+export type MBArtist = {
   joinphrase?: string
   name: string // concatenated artist names
   artist: {
     id: MBID // inner artist id
     name: string // artist name
     'sort-name': string // last, first
-    aliases?: MusicBrainzArtistAlias[]
+    aliases?: MBArtistAlias[]
   }
 }
 
-export type MusicBrainzArtistAlias = {
+export type MBArtistAlias = {
   'sort-name': string
   'type-id': MBID
   name: string // artist name
@@ -53,14 +57,14 @@ export type MusicBrainzArtistAlias = {
   'end-date'?: ISODate | null
 }
 
-export type MusicBrainzRelease = {
+export type MBRelease = {
   id: MBID
   'status-id': MBID
   count: 1
   title: string
   status: string // 'Official'
   disambiguation?: string // 'clean'
-  'artist-credit': MusicBrainzArtist[]
+  'artist-credit': MBArtist[]
   'release-group': {
     id: MBID
     'type-id': string
@@ -71,136 +75,64 @@ export type MusicBrainzRelease = {
   date: ISODayDate
   country: string // length 2
   'track-count': number // count of tracks in album
-  // 'release-events': [
-  //     {
-  //         date: ISODayDate
-  //         area: {
-  //             id: MBID
-  //             name: 'Jordan'
-  //             'sort-name': 'Jordan'
-  //             'iso-3166-1-codes': ['JO']
-  //         }
-  //     },
-  // ]
-  // media: [
-  //     {
-  //         position: 1
-  //         format: 'Digital Media'
-  //         track: [
-  //             {
-  //                 id: 'd45db964-34bf-49f4-825b-c65e7f78a74d'
-  //                 number: '3'
-  //                 title: 'Sippy Cup'
-  //                 length: 195076
-  //             },
-  //         ]
-  //         'track-count': 16
-  //         'track-offset': 2
-  //     },
-  // ]
 }
 
-const release: MusicBrainzRelease = {
-  id: '448bd3e8-eb04-4950-850c-c482d040db2f',
-  'status-id': '4e304316-386d-3409-af2e-78857eec5cfe',
-  count: 1,
-  title: 'Cry Baby',
-  status: 'Official',
-  disambiguation: 'clean deluxe edition',
-  'artist-credit': [
-    {
-      name: 'Melanie Martinez',
-      artist: {
-        id: '0df563ec-1a79-486e-a46d-5b9862a40311',
-        name: 'Melanie Martinez',
-        'sort-name': 'Martinez, Melanie',
-      },
-    },
-  ],
-  'release-group': {
-    id: '85dd3078-58e9-46fc-b1ae-7d3abfde48c3',
-    'type-id': 'f529b476-6e62-324f-b0aa-1f3e33d313fc',
-    'primary-type-id': 'f529b476-6e62-324f-b0aa-1f3e33d313fc',
-    title: 'Cry Baby',
-    'primary-type': 'Album',
-  },
-  date: '2015-08-14',
-  country: 'XW',
-  'track-count': 16,
-}
-
-const recording: MusicBrainzRecording = {
-  id: '6def13d5-6a00-4fb2-a3c7-1d00bcc5ca82',
-  score: 100,
-  title: 'Sippy Cup',
-  length: 195076,
-  disambiguation: 'explicit',
-  video: null,
-  'artist-credit': [
-    {
-      name: 'Melanie Martinez',
-      artist: {
-        id: '0df563ec-1a79-486e-a46d-5b9862a40311',
-        name: 'Melanie Martinez',
-        'sort-name': 'Martinez, Melanie',
-        aliases: [
-          {
-            'sort-name': 'Martinez, Melanie Adele',
-            'type-id': 'd4dcd0c0-b341-3612-a332-c0ce797b25cf',
-            name: 'Melanie Adele Martinez',
-            locale: 'es',
-            type: 'Legal name',
-            'begin-date': null,
-            'end-date': null,
-          },
-          {
-            'sort-name': 'Мелани Мартинес',
-            'type-id': '894afba6-2816-3c24-8072-eadb66bd04bc',
-            name: 'Мелани Мартинес',
-            locale: 'ru',
-            type: 'Artist name',
-            'begin-date': null,
-            'end-date': null,
-          },
-        ],
-      },
-    },
-  ],
-  'first-release-date': '2015-07-31',
-  releases: [
-    {
-      id: 'ae6dcbf3-ae80-4e0b-8ac1-b9a851a2d461',
-      'status-id': '4e304316-386d-3409-af2e-78857eec5cfe',
-      count: 1,
-      title: 'Cry Baby',
-      status: 'Official',
-      'artist-credit': [
+export type MBResultGetRecording<Main extends boolean> = {
+  disambiguation: true
+  id: '8f7f32a5-36c7-4f5d-9d31-f771be370737'
+  'first-release-date': '2017-06-15'
+  'artist-credit': Main extends true
+    ? [
         {
-          name: 'Melanie Martinez',
+          name: 'Bones'
           artist: {
-            id: '0df563ec-1a79-486e-a46d-5b9862a40311',
-            name: 'Melanie Martinez',
-            'sort-name': 'Martinez, Melanie',
-          },
+            'type-id': 'b6e035f4-3ce9-331c-97df-83397230b0df'
+            name: 'Bones'
+            disambiguation: 'US rapper'
+            type: 'Person'
+            'sort-name': 'Bones'
+            id: 'e3f7631b-e50b-4923-9049-2fa84dfcaf71'
+          }
+          joinphrase: ''
         },
-      ],
-      'release-group': {
-        id: '85dd3078-58e9-46fc-b1ae-7d3abfde48c3',
-        'type-id': 'f529b476-6e62-324f-b0aa-1f3e33d313fc',
-        'primary-type-id': 'f529b476-6e62-324f-b0aa-1f3e33d313fc',
-        title: 'Cry Baby',
-        'primary-type': 'Album',
-      },
-      date: '2015-11-11',
-      country: 'BR',
-      'track-count': 13,
-    },
-  ],
-  isrcs: ['USAT21501779'],
-  tags: [
-    {
-      count: 1,
-      name: 'indie pop',
-    },
-  ],
+      ]
+    : never
+  length: 261000
+  video: false
+  releases: Main extends true
+    ? [
+        {
+          status: 'Official'
+          date: '2017-06-15'
+          disambiguation: ''
+          id: '133eb34a-75f6-4c4a-bcd1-2ba26bbd3211'
+          'release-events': [
+            {
+              date: '2017-06-15'
+              area: {
+                'iso-3166-1-codes': ['XW']
+                name: '[Worldwide]'
+                disambiguation: ''
+                'sort-name': '[Worldwide]'
+                type: null
+                id: '525d4e18-3d00-31b9-a58b-a146a916de8f'
+                'type-id': null
+              }
+            },
+          ]
+          'text-representation': {
+            language: 'eng'
+            script: 'Latn'
+          }
+          packaging: null
+          barcode: null
+          title: 'NoRedeemingQualities'
+          country: 'XW'
+          'status-id': '4e304316-386d-3409-af2e-78857eec5cfe'
+          quality: 'normal'
+          'packaging-id': null
+        },
+      ]
+    : never
+  title: 'SeanPaulWasNeverThereToGimmeTheLight'
 }

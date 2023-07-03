@@ -25,6 +25,7 @@
 
       "@sovok/client": ["./client/src/index.ts"],
       "@sovok/client/*": ["./client/src/*"],
+      "@client/*": ["./client/src/*"],
 
       "@sovok/worker": ["./worker/src/index.ts"],
       "@sovok/worker/*": ["./worker/src/*"]

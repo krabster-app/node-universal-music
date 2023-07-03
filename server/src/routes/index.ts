@@ -5,7 +5,7 @@ import { search } from '@sovok/server/routes/search'
 import { play } from '@sovok/server/routes/play'
 
 export const mainRouter = router({
-  auth,
-  search,
-  play,
+  auth: auth,
+  search: search,
+  play: play,
 })

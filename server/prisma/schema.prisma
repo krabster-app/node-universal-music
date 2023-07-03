@@ -18,19 +18,22 @@ model User {
 }
 
 model TrackInfo {
-  id              String            @id @default(uuid())
-  title           String
-  length          Int
-  disambiguation  String?
-  artistsMap      TrackToArtist[]
-  artistFull      String
-  coverUrl        String // http://coverartarchive.org/release/{MBID}/front-250/500/1200
-  releaseId       String
-  release         ReleaseInfo?      @relation(fields: [releaseId], references: [id])
+  id             String  @id @default(uuid())
+  title          String
+  length         Int
+  disambiguation String?
+  coverUrl       String? // http://coverartarchive.org/release/{MBID}/front-250/500/1200
+
+  artistsMap TrackToArtist[]
+  artistFull String
+  releaseMap TrackToRelease[]
+
   tags            String[]
   trackOnPlatform TrackOnPlatform[]
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  playlistedIn    TrackToPlaylist[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model ArtistInfo {
@@ -47,18 +50,35 @@ model TrackToArtist {
   track     TrackInfo  @relation(fields: [trackId], references: [id])
   artistId  String
   artist    ArtistInfo @relation(fields: [artistId], references: [id])
+  prefix    String?
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
+
+  @@unique([trackId, artistId])
 }
 
 model ReleaseInfo {
-  id             String      @id @default(uuid())
+  id             String  @id @default(uuid())
   title          String
   status         String // 'Official'
   disambiguation String? // 'clean'
-  tracks         TrackInfo[]
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+
+  tracksMap TrackToRelease[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TrackToRelease {
+  id        String      @id @default(uuid())
+  trackId   String
+  track     TrackInfo   @relation(fields: [trackId], references: [id])
+  releaseId String
+  release   ReleaseInfo @relation(fields: [releaseId], references: [id])
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([trackId, releaseId])
 }
 
 enum Platform {
@@ -76,4 +96,29 @@ model TrackOnPlatform {
   meta        Json
 
   @@unique([platform, trackInfoId])
+}
+
+model TrackToPlaylist {
+  id String @id @default(uuid())
+
+  trackId    String
+  track      TrackInfo @relation(fields: [trackId], references: [id])
+  playlistId String
+  playlist   Playlist  @relation(fields: [playlistId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([trackId, playlistId])
+}
+
+model Playlist {
+  id    String @id @default(uuid())
+  title String
+
+  tracks TrackToPlaylist[]
+
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -1,11 +1,9 @@
 import { exists } from '../guards'
 import { TrackInfo } from '../models/search/track'
 import { getCoverUrl } from './get-cover-url'
-import { MusicBrainzRecording } from './types'
+import { MBRecording } from './types'
 
-export const musicBrainzTransformer = (
-  mbRecording: MusicBrainzRecording,
-): TrackInfo => {
+export const musicBrainzTransformer = (mbRecording: MBRecording): TrackInfo => {
   const release =
     mbRecording.releases?.find(v => v.status === 'Official') ??
     mbRecording.releases?.at(0)

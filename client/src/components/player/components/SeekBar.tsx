@@ -9,7 +9,7 @@ import React, {
 } from 'react'
 import { secondsFormat } from '@sovok/client/utils/secondsFormat.ts'
 import { useEvent } from 'react-use'
-import { playerInstance } from '@sovok/client/components/player/global/playerInstance.tsx'
+import { playerInstance } from '@sovok/client/components/player/global/playerInstance'
 
 export const SeekBar: FC<
   PropsWithChildren<{

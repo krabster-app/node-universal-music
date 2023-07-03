@@ -34,6 +34,10 @@ export default {
         sans: ['Ubuntu', 'sans-serif'],
         display: ['Jost', 'Montserrat', 'sans-serif'],
       },
+      animation: {
+        'fade-in': 'fade-in 0.1s ease-in forwards;',
+        'slide-bottom': 'slide-from-bottom 0.2s linear forwards;',
+      },
     },
   },
   plugins: [
