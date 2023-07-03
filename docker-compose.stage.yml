@@ -11,7 +11,7 @@ services:
       - database_data:/var/lib/postgresql/data
 
   web:
-    image: 'ghcr.io/talkiiing-team/sovok:latest'
+    build: .
     ports:
       - '${WEB_EXPOSE}:${WEB_PORT}'
     environment:

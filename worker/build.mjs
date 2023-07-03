@@ -7,7 +7,7 @@ await esbuild.build({
   target: 'node16',
   platform: 'node',
   minify: true,
-  external: ['jsdom'],
+  external: ['jsdom', 'ytdl-core'],
   sourcemap: 'inline',
   define: {
     'process.env.NODE_ENV': '"production"',

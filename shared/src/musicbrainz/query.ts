@@ -26,7 +26,3 @@ export const queryMusicInfo = async (
     recordings: [],
   }
 }
-
-if (require.main === module) {
-  queryMusicInfo('BONES - LooseScrew', 1).then(console.log)
-}
